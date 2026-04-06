@@ -35,46 +35,63 @@
 
 	:root {
     	    /* Adjust these two numbers to find your "Perfect Large Size" */
-    	    --card-width: 10vw; 
-    	    --card-height: calc(10vw * 1.5); 
+    	    --card-width: 9vw; 
+    	    --card-height: calc(9vw * 1.5); 
 	}
 
         .top-row, {
-    	    display: flex;
-	    flex-wrap: nowrap;
-    	    justify-content: space-between;
-	    align-items: flex-start;
-    	    width: 98vw;
-	    margin: 0 auto;
-    	    padding: 10px 0;
+    	    display: grid;
+	    grid-template-columns: repeat(7, 1fr);
+	    grid-template-rows: auto;
+	    gap: 1vw;
+	    width: 95vw;
+	    margin: 10px auto;
+    	    justify-items: center;
+	    align-items: start;
 	}
 
-	.foundation-container {
-	    display: flex;
-	    flex-wrap: nowrap;
-	    gap: 0.5vw;
-	}
 
 	.tableau {
-	    display: flex;
-	    justify-content: space-between;
-	    width: 98vw;
+	    display: grid;
+	    grid-template-columns: repeat(7, 1fr);
+	    gap: 1vw;
+	    justify-items: center;
+	    width: 95vw;
 	    margin: 20px auto 0 auto;
 	}
+
+	#tableau .slot .card {
+    	    position: absolute; /* They float relative to the slot */
+    	    top: 0;
+    	    left: 0;
+	}
+
+	/* Use the "Sibling Selector" to offset cards */
+	/* Card 2 is shifted down 30px from the top of the slot */
+	#tableau .slot .card:nth-child(2) { top: 30px; }
+	#tableau .slot .card:nth-child(3) { top: 60px; }
+	#tableau .slot .card:nth-child(4) { top: 90px; }
+	#tableau .slot .card:nth-child(5) { top: 120px; }
+	#tableau .slot .card:nth-child(6) { top: 150px; }
+	#tableau .slot .card:nth-child(7) { top: 180px; }
+	#tableau .slot .card:nth-child(8) { top: 210px; }
 
         .spacer {
     	    display: block;
     	    width: var(--card-width);
+	    height: var(--card-height);
+	    visibility: hidden;
 	}
 
 	.slot {
     	    width: var(--card-width);
     	    height: var(--card-height);
-    	    flex-shrink: 0; 
     	    border: 2px dashed rgba(255, 255, 255, 0.2);
     	    border-radius: 8px;
     	    position: relative;
     	    box-sizing: border-box;
+	    background-color: rgba(255, 255, 255, 0.05);
+    	    display: block;
         }
 
         /* CARD STYLING */
@@ -186,13 +203,13 @@
 
     <div id="game-container">
         <div class="top-row">
-	    <div style="display: flex; gap: 1vw; flex-shrink: 0;">
-    	        <div class="slot" id="deck" onclick="dealCard()"></div>
-    	        <div class="slot" id="waste"></div>
-    	    </div>
-
-    	    <div class="foundation-container">
-        	<div class="slot foundation" id="f1"></div>
+	        <div class="slot" id="deck" onclick="dealCard()"></div>
+    	    
+	        <div class="slot" id="waste"></div>
+    	    
+		<div class="spacer"></div>
+        	
+		<div class="slot foundation" id="f1"></div>
         	<div class="slot foundation" id="f2"></div>
         	<div class="slot foundation" id="f3"></div>
         	<div class="slot foundation" id="f4"></div>

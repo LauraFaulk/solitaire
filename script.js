@@ -185,10 +185,14 @@ function checkMove(draggedCard, mouseX, mouseY) {
 
 function snapTo(card, target) {
     target.appendChild(card);
-    card.style.position = 'relative';
+    if (target.classList.contains('foundation')) {
+        card.style.top = '0';
+    } else {
+    card.style.position = 'absolute';
+    }
+
     card.style.left = '0';
-    card.style.top = '0';
-    card.style.zIndex = 1;
+    card.style.zIndex = target.childElementCount;
 
     score += 10;
     const scoreDisplay = document.getElementById('score');
