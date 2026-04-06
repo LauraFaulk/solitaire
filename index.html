@@ -26,20 +26,20 @@
 
         /* GAME LAYOUT */
         #game-container {
+	    width: 100vw
             display: flex;
             flex-direction: column;
             align-items: center;
-	    gap: 2vh;
-            padding-top: 2vh;
+	    gap: 20px;
         }
 
 	:root {
     	    /* Adjust these two numbers to find your "Perfect Large Size" */
-    	    --card-width: 9vw; 
-    	    --card-height: calc(9vw * 1.5); 
+    	    --card-width: 10vw; 
+    	    --card-height: calc(10vw * 1.5); 
 	}
 
-        .top-row, {
+        .top-row {
     	    display: grid;
 	    grid-template-columns: repeat(7, 1fr);
 	    grid-template-rows: auto;
@@ -68,13 +68,13 @@
 
 	/* Use the "Sibling Selector" to offset cards */
 	/* Card 2 is shifted down 30px from the top of the slot */
-	#tableau .slot .card:nth-child(2) { top: 30px; }
-	#tableau .slot .card:nth-child(3) { top: 60px; }
-	#tableau .slot .card:nth-child(4) { top: 90px; }
-	#tableau .slot .card:nth-child(5) { top: 120px; }
-	#tableau .slot .card:nth-child(6) { top: 150px; }
-	#tableau .slot .card:nth-child(7) { top: 180px; }
-	#tableau .slot .card:nth-child(8) { top: 210px; }
+	#tableau .slot .card:nth-child(2) { top: 3vw; }
+	#tableau .slot .card:nth-child(3) { top: 6vw; }
+	#tableau .slot .card:nth-child(4) { top: 9vw; }
+	#tableau .slot .card:nth-child(5) { top: 12vw; }
+	#tableau .slot .card:nth-child(6) { top: 15vw; }
+	#tableau .slot .card:nth-child(7) { top: 18vw; }
+	#tableau .slot .card:nth-child(8) { top: 21vw; }
 
         .spacer {
     	    display: block;
@@ -214,9 +214,10 @@
         	<div class="slot foundation" id="f3"></div>
         	<div class="slot foundation" id="f4"></div>
     	    </div>
-	</div>
-        
-	<div class="tableau" id="tableau">
+            
+	    <div id="tableau" class="tableau">
+		</div>
+	    <div class="tableau" id="tableau">
             <div class="slot"></div>
             <div class="slot"></div>
             <div class="slot"></div>
