@@ -35,19 +35,25 @@
 
 	:root {
     	    /* Adjust these two numbers to find your "Perfect Large Size" */
-    	    --card-width: 12vw; 
-    	    --card-height: calc(12vw * 1.5); /* Maintains the 2:3 card ratio */
+    	    --card-width: 11vw; 
+    	    --card-height: calc(11vw * 1.5); /* Maintains the 2:3 card ratio */
 	}
 
         .top-row, .tableau {
     	    display: grid;
     	    grid-template-columns: repeat(7, 1fr);
     	    gap: 1vw; /* Smaller gap to allow for bigger cards */
-    	    width: 95vw;
+    	    width: 90vw;
+	    margin: 20px auto 0 auto;
     	    justify-items: center;
 	}
 
-        .slot, .card {
+        .spacer {
+    	    display: block;
+    	    width: var(--card-width);
+	}
+
+	.slot, .card {
     	    width: var(--card-width);
     	    height: var(--card-height);
     	    border-radius: 8px;
@@ -55,19 +61,53 @@
 
         /* CARD STYLING */
         .card {
-            background: white;
-            position: absolute;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 2.5vw;
-            color: black;
-            box-shadow: 2px 2px 8px rgba(0,0,0,0.4);
-            cursor: grab;
-            user-select: none;
-            border: 1px solid #999;
-	    box-sizing: border-box;
-        }
+            /* ... (Keep your width, height, background, border-radius, border, box-shadow) ... */
+    	    width: var(--card-width);
+    	    height: var(--card-height);
+    	    background: white;
+    	    border-radius: 8px;
+    	    border: 1px solid #999;
+    	    box-shadow: 2px 2px 8px rgba(0,0,0,0.4);
+    	    box-sizing: border-box;
+    	    cursor: grab;
+    	    user-select: none;
+    
+    	    /* CRITICAL: Set to relative so corners align inside the card */
+    	    position: relative; 
+    
+    	    /* Font style for the jumbo numbers */
+    	    font-family: 'Sour Gummy', sans-serif;
+    	    font-size: 3.5vw; /* Jumbo but balanced with the card size */
+    	    font-weight: bold;
+    	    line-height: 1; /* Tight line height for corner stacking */
+	}
+
+	/* Styles for the individual val/suit pieces */
+	.card .card-corner {
+    	    position: absolute;
+    	    display: flex;
+    	    flex-direction: column;
+    	    align-items: center;
+    	    width: 25%; /* Give them a little room to breathe */
+    	    text-align: center;
+	}
+
+	/* --- Position the Top Left corner --- */
+	.card .top-left {
+    	    top: 5px;
+    	    left: 5px;
+	}
+
+	/* --- Position and Rotate the Bottom Right corner --- */
+	.card .bottom-right {
+    	    bottom: 5px;
+    	    right: 5px;
+    	    transform: rotate(180deg); /* Classic card design rule */
+	}
+
+	/* Make sure the colors apply to the corner elements */
+	.card.red .card-corner { color: #d63031; }
+	.card.black .card-corner { color: black; }	
 
 	.card:active { cursor: grabbing; 
 	}
@@ -130,9 +170,7 @@
     	    <div class="slot" id="deck" onclick="dealCard()"></div>
     	    <div class="slot" id="waste"></div>
     
-    	    <div class="spacer" style="width: 80px;"></div> 
-
-    	    <div class="slot foundation" id="f1"></div>
+    	    <div class="spacer"></div> <div class="slot foundation" id="f1"></div>
     	    <div class="slot foundation" id="f2"></div>
     	    <div class="slot foundation" id="f3"></div>
     	    <div class="slot foundation" id="f4"></div>

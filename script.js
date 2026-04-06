@@ -9,7 +9,30 @@ let score = 0;
 function createCardElement(cardData) {
     const cardDiv = document.createElement('div');
     cardDiv.className = `card ${cardData.color}`;
-    cardDiv.innerHTML = `${cardData.val}${cardData.suit}`;
+    
+    // --- BUILD THE TOP-LEFT CORNER ---
+    const topLeft = document.createElement('div');
+    topLeft.className = 'card-corner top-left';
+    
+    // Check if the value is '10' (it's the only 2-character value, needs space)
+    const valSpanTL = document.createElement('span');
+    valSpanTL.className = 'card-val';
+    valSpanTL.innerText = cardData.val;
+    
+    const suitSpanTL = document.createElement('span');
+    suitSpanTL.className = 'card-suit';
+    suitSpanTL.innerText = cardData.suit;
+    
+    topLeft.appendChild(valSpanTL);
+    topLeft.appendChild(suitSpanTL);
+    
+    // --- BUILD THE BOTTOM-RIGHT CORNER ---
+    const bottomRight = topLeft.cloneNode(true); // Efficiency! Clone the TL corner
+    bottomRight.className = 'card-corner bottom-right'; // Override the class
+    
+    // Assemble the card
+    cardDiv.appendChild(topLeft);
+    cardDiv.appendChild(bottomRight);
     
     // Attach data for the rules engine
     cardDiv.dataset.value = valueMap[cardData.val];
