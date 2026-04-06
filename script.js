@@ -1,3 +1,19 @@
+// Add this helper at the top of script.js to convert 'A', 'J', 'Q', 'K' to numbers
+const valueMap = { 'A': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10, 'J': 11, 'Q': 12, 'K': 13 };
+
+function createCardElement(cardData) {
+    const cardDiv = document.createElement('div');
+    cardDiv.className = `card ${cardData.color}`;
+    cardDiv.innerHTML = `${cardData.val}${cardData.suit}`;
+    
+    // THE SECRET SAUCE: Store data for the rules engine
+    cardDiv.dataset.value = valueMap[cardData.val];
+    cardDiv.dataset.color = cardData.color; // 'red' or 'black'
+    
+    addDragEvents(cardDiv);
+    return cardDiv;
+}
+
 const suits = ['♠', '♥', '♦', '♣'];
 const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
 let deck = [];
@@ -150,18 +166,29 @@ function checkMove(draggedCard, mouseX, mouseY) {
 
     // Find the closest "Slot" or "Card" below
     let targetSlot = elementBelow.closest('.slot');
-    
-    if (targetSlot) {
-        // RULE: For now, we allow moving to any empty slot or any card
-        // To add strict "King only on empty" or "Red on Black", 
-        // you would add IF statements here checking card.dataset values.
-        targetSlot.appendChild(draggedCard);
-        draggedCard.style.position = 'relative';
-        draggedCard.style.left = '0';
-        draggedCard.style.top = '0';
-        return true;
+    if (targetSlot) return false;
+
+    const draggedVal = parseInt(draggedCard.dataset.value);
+    const draggedColor = draggedCard.dataset.color;
+
+    const topCard = targetSlot.lastElementChild;
+
+    if (!topCard) {
+	if (draggedVal ===13) {
+	    targetSlot.appendChild(draggedCard);
+	    snapToSlot(draggedCard);
+	    return true;
+	}
     }
+
     return false;
+}
+
+function snapToSlot(card) {
+    card.style.position = 'relative';
+    card.style.left = '0';
+    card.style.top = '0';
+    card.style.zIndex = 1;
 }
 
 // AUTO-REFILL LOGIC
