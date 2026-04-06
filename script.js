@@ -166,14 +166,14 @@ function addDragEvents(card) {
 // THE "RULES" BRAIN
 function checkMove(draggedCard, mouseX, mouseY) {
     // This looks for what is "under" your mouse when you let go
-    draggedCard.style.display = 'none'; // Temporarily hide to see what's under
+    draggedCard.style.visibility = 'hidden';
     let elementBelow = document.elementFromPoint(mouseX, mouseY);
-    draggedCard.style.display = 'flex';
+    draggedCard.style.visibility = 'visible';
 
     if (!elementBelow) return false;
 
-    // Find the closest "Slot" or "Card" below
-    let targetSlot = elementBelow.closest('.slot');
+    let targetSlot = elementBelow.closest('.slot') || elementBelow.closest('.foundation');
+
     if (targetSlot) {
 	const draggedVal = parseInt(draggedCard.dataset.value);
 	const draggedColor = draggedCard.dataset.color;
