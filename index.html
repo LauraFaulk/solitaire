@@ -77,17 +77,34 @@
             background-image: repeating-linear-gradient(45deg, #00d2ff, #00d2ff 10px, #0099bb 10px, #0099bb 20px);
         }
 
-        .controls { margin-top: 30px; }
-        button {
-            padding: 12px 40px;
-            font-family: 'Sour Gummy', sans-serif;
-            font-size: 1.2rem;
-            background: #e94560;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-        }
+        .controls {
+    	    position: absolute;
+	    top: 20px;
+    	    right: 20px;
+    	    z-index: 2000; /* Ensures it stays above floating cards */
+	}
+
+	.controls button {
+    	    padding: 10px 20px;
+    	    font-family: 'Sour Gummy', sans-serif;
+    	    background-color: #ff4757; /* A nice "arcade red" */
+    	    color: white;
+    	    border: none;
+    	    border-radius: 5px;
+    	    cursor: pointer;
+    	    box-shadow: 0 4px 0 #b33939; /* 3D effect */
+    	    transition: all 0.2s;
+	}
+
+	.controls button:hover {
+    	    background-color: #ff6b81;
+     	    transform: translateY(-2px);
+	}
+
+	.controls button:active {
+    	    transform: translateY(2px);
+    	    box-shadow: none;
+	}
 
 	.refresh-icon {
     	    font-size: 2rem;
@@ -131,7 +148,8 @@
     </div>
 
     <div class="controls">
-        <button onclick="initGame()">Restart Game</button>
+        <span style="margin-right: 15px; font-weight: bold; font-size: 1.2rem;">Score: <span id="score">0</span></span>
+	<button onclick="initGame()">Restart Game</button>
     </div>
 
     <script src="script.js"></script>
