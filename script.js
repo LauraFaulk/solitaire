@@ -52,25 +52,33 @@ function initGame() {
 }
 
 function dealCard() {
+    const waste = document.getElementById('waste');
+    const deckSlot = document.getElementById('deck');
+    
     if (deck.length > 0) {
         const cardData = deck.pop();
-        const waste = document.getElementById('waste');
-        const cardDiv = document.createElement('div');
+        const cardDiv = createCardElement(cardData);
+
+	waste.innerHTML = '';
+	waste.appendChild(cardDiv);
+
         cardDiv.className = `card ${cardData.color}`;
         cardDiv.innerHTML = `${cardData.val}${cardData.suit}`;
         
         // ADDED: Attach the drag ability to the dealt card
         addDragEvents(cardDiv);
         
-        waste.innerHTML = ''; // Clear previous waste card
-        waste.appendChild(cardDiv);
-
-        if (deck.length === 0) document.getElementById('deck').innerHTML = '';
     } else {
-        alert("Deck Empty! Restart to play again.");
+        // DECK RESET: Move waste back to deck
+        const wasteCards = waste.querySelectorAll('.card');
+        if (wasteCards.length === 0 && deck.length === 0) {
+            alert("No more moves possible!");
+            return;
+        }
+        // Logic to refill deck array from a 'waste' array would go here
+        location.reload(); // Simple version: Restart the game
     }
 }
-
 // --- THE DRAG LOGIC (NEW SECTION) ---
 function addDragEvents(card) {
     card.onmousedown = function(event) {
@@ -166,12 +174,10 @@ function checkMove(draggedCard, mouseX, mouseY) {
 
     // Find the closest "Slot" or "Card" below
     let targetSlot = elementBelow.closest('.slot');
-    if (targetSlot) return false;
-
-    const draggedVal = parseInt(draggedCard.dataset.value);
-    const draggedColor = draggedCard.dataset.color;
-
-    const topCard = targetSlot.lastElementChild;
+    if (targetSlot) {
+	const draggedVal = parseInt(draggedCard.dataset.value);
+	const draggedColor = draggedCard.dataset.color;
+	const topCard = targetSlot.lastElementChild;
 
     if (!topCard) {
 	if (draggedVal ===13) {
@@ -179,9 +185,57 @@ function checkMove(draggedCard, mouseX, mouseY) {
 	    snapToSlot(draggedCard);
 	    return true;
 	}
-    }
+    } else {
+            const topVal = parseInt(topCard.dataset.value);
+            const topColor = topCard.dataset.color;
 
+            // Rule: One lower AND opposite color
+            if (topVal === draggedVal + 1 && topColor !== draggedColor) {
+                targetSlot.appendChild(draggedCard);
+                snapToSlot(draggedCard);
+                return true;
+            }
+	}
+    }
     return false;
+}
+
+// NEW: Win Condition Logic
+function handleFoundationMove(card, pile) {
+    const cardVal = parseInt(card.dataset.value);
+    const cardSuit = card.innerHTML.slice(-1); // Gets the symbol
+    const topCard = pile.lastElementChild;
+
+    if (!topCard) {
+        if (cardVal === 1) { // Only Aces start a foundation
+            pile.appendChild(card);
+            snapToSlot(card);
+            score += 50; // Big points for foundation!
+            return true;
+        }
+    } else {
+        const topVal = parseInt(topCard.dataset.value);
+        const topSuit = topCard.innerHTML.slice(-1);
+
+        // Rule: Same suit AND one value higher
+        if (cardVal === topVal + 1 && cardSuit === topSuit) {
+            pile.appendChild(card);
+            snapToSlot(card);
+            score += 50;
+            checkWin();
+            return true;
+        }
+    }
+    return false;
+}
+
+function checkWin() {
+    const foundations = document.querySelectorAll('.foundation');
+    let totalCards = 0;
+    foundations.forEach(f => totalCards += f.childElementCount);
+    if (totalCards === 52) {
+        alert("NERD ARCADE CHAMPION! You won Solitaire!");
+    }
 }
 
 function snapToSlot(card) {
