@@ -39,13 +39,25 @@
     	    --card-height: calc(11vw * 1.5); /* Maintains the 2:3 card ratio */
 	}
 
-        .top-row, .tableau {
-    	    display: grid;
-    	    grid-template-columns: repeat(7, 1fr);
-    	    gap: 1vw; /* Smaller gap to allow for bigger cards */
+        .top-row, {
+    	    display: flex;
+    	    justify-content: space-between;;
     	    width: 90vw;
+	    margin: 0 auto;
+    	    gap: 1vw;
+	}
+
+	.foundation-container {
+	    display: flex;
+	    gap: 1vw;
+	}
+
+	.tableau {
+	    display: flex;
+	    justify-content: space-between;
+	    width: 90vw;
 	    margin: 20px auto 0 auto;
-    	    justify-items: center;
+	    gap: 1vw;
 	}
 
         .spacer {
@@ -53,10 +65,14 @@
     	    width: var(--card-width);
 	}
 
-	.slot, .card {
+	.slot {
     	    width: var(--card-width);
     	    height: var(--card-height);
+    	    flex-shrink: 0; 
+    	    border: 2px dashed rgba(255, 255, 255, 0.2);
     	    border-radius: 8px;
+    	    position: relative;
+    	    box-sizing: border-box;
         }
 
         /* CARD STYLING */
@@ -92,16 +108,16 @@
     	    text-align: center;
 	}
 
-	/* --- Position the Top Left corner --- */
-	.card .top-left {
+	/* --- Position the Top Right corner --- */
+	.card .top-right {
     	    top: 5px;
-    	    left: 5px;
+    	    right: 5px;
 	}
 
-	/* --- Position and Rotate the Bottom Right corner --- */
-	.card .bottom-right {
+	/* --- Position and Rotate the Bottom Left corner --- */
+	.card .bottom-left {
     	    bottom: 5px;
-    	    right: 5px;
+    	    leftt: 5px;
     	    transform: rotate(180deg); /* Classic card design rule */
 	}
 
@@ -167,15 +183,20 @@
 
     <div id="game-container">
         <div class="top-row">
-    	    <div class="slot" id="deck" onclick="dealCard()"></div>
-    	    <div class="slot" id="waste"></div>
-    
-    	    <div class="spacer"></div> <div class="slot foundation" id="f1"></div>
-    	    <div class="slot foundation" id="f2"></div>
-    	    <div class="slot foundation" id="f3"></div>
-    	    <div class="slot foundation" id="f4"></div>
+	    <div style="display: flex; gap: 1vw;">
+    	        <div class="slot" id="deck" onclick="dealCard()"></div>
+    	        <div class="slot" id="waste"></div>
+    	    </div>
+
+    	    <div class="foundation-container">
+        	<div class="slot foundation" id="f1"></div>
+        	<div class="slot foundation" id="f2"></div>
+        	<div class="slot foundation" id="f3"></div>
+        	<div class="slot foundation" id="f4"></div>
+    	    </div>
 	</div>
-        <div class="tableau" id="tableau">
+        
+	<div class="tableau" id="tableau">
             <div class="slot"></div>
             <div class="slot"></div>
             <div class="slot"></div>
