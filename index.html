@@ -8,7 +8,7 @@
     
     <style>
         body {
-            background: radial-gradient(#0a4d21, #052912); /* Classic green felt */
+            background: radial-gradient(#0a4d21, #052912);
             font-family: 'Sour Gummy', sans-serif;
             color: white;
             margin: 0;
@@ -16,80 +16,75 @@
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
-            overflow: hidden;
         }
 
-        header {
-            margin-top: 20px;
-            text-align: center;
-        }
+        header { margin-top: 20px; text-align: center; }
+        h1 { font-size: 3rem; color: #00d2ff; text-shadow: 0 0 10px #00d2ff; margin: 0; }
 
-        h1 {
-            font-size: 3rem;
-            color: #00d2ff;
-            text-shadow: 0 0 10px #00d2ff;
-            margin-bottom: 10px;
-        }
-
-        /* THE GAME BOARD GRID */
-        #game-board {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 15px;
+        /* GAME LAYOUT */
+        #game-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
             width: 90%;
             max-width: 1000px;
-            margin-top: 30px;
+            margin-top: 20px;
         }
 
-        .card-slot {
+        .top-row {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+        }
+
+        .tableau {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            min-height: 400px;
+        }
+
+        .slot {
             aspect-ratio: 2/3;
             border: 2px dashed rgba(255, 255, 255, 0.2);
             border-radius: 8px;
             position: relative;
-            background: rgba(0, 0, 0, 0.1);
         }
 
-        /* A SIMPLE CSS CARD STYLE */
+        /* CARD STYLING */
         .card {
             width: 100%;
             height: 100%;
             background: white;
             border-radius: 8px;
-            border: 1px solid #ccc;
             position: absolute;
-            top: 0;
-            left: 0;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             color: black;
             box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
-            cursor: grab;
+            cursor: pointer;
+            user-select: none;
+            border: 1px solid #999;
         }
 
-        .red { color: #e94560; }
-
-        .controls {
-            margin-top: 40px;
+        .card.red { color: #e94560; }
+        .card.back { 
+            background: #00d2ff; 
+            background-image: repeating-linear-gradient(45deg, #00d2ff, #00d2ff 10px, #0099bb 10px, #0099bb 20px);
         }
 
+        .controls { margin-top: 30px; }
         button {
-            padding: 10px 30px;
+            padding: 12px 40px;
             font-family: 'Sour Gummy', sans-serif;
             font-size: 1.2rem;
             background: #e94560;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: 0.3s;
-        }
-
-        button:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 15px #e94560;
         }
     </style>
 </head>
@@ -97,27 +92,80 @@
 
     <header>
         <h1>Solitaire</h1>
-        <p>Classic cards for the Nerd Arcade</p>
+        <p>Score: <span id="score">0</span></p>
     </header>
 
-    <div id="game-board">
-        <div class="card-slot"><div class="card red">A ♥</div></div>
-        <div class="card-slot"></div>
-        <div class="card-slot"></div>
-        <div class="card-slot"></div>
-        <div class="card-slot"></div>
-        <div class="card-slot"></div>
-        <div class="card-slot"></div>
+    <div id="game-container">
+        <div class="top-row">
+            <div class="slot" id="deck" onclick="dealCard()"></div>
+            <div class="slot" id="waste"></div>
+            <div></div> <div class="slot foundation"></div>
+            <div class="slot foundation"></div>
+            <div class="slot foundation"></div>
+            <div class="slot foundation"></div>
+        </div>
+        <div class="tableau" id="tableau">
+            <div class="slot"></div>
+            <div class="slot"></div>
+            <div class="slot"></div>
+            <div class="slot"></div>
+            <div class="slot"></div>
+            <div class="slot"></div>
+            <div class="slot"></div>
+        </div>
     </div>
 
     <div class="controls">
-        <button onclick="location.reload()">New Game</button>
+        <button onclick="initGame()">Restart Game</button>
     </div>
 
     <script>
-        // Note: Full Solitaire logic is 500+ lines.
-        // For now, this placeholder ensures your layout is perfect!
-        console.log("Solitaire Engine Ready!");
+        const suits = ['♠', '♥', '♦', '♣'];
+        const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+        let deck = [];
+
+        function initGame() {
+            deck = [];
+            document.getElementById('tableau').querySelectorAll('.slot').forEach(s => s.innerHTML = '');
+            document.getElementById('waste').innerHTML = '';
+            
+            // 1. Create Deck
+            for (let suit of suits) {
+                for (let val of values) {
+                    deck.push({ val, suit, color: (suit === '♥' || suit === '♦') ? 'red' : 'black' });
+                }
+            }
+
+            // 2. Shuffle
+            deck.sort(() => Math.random() - 0.5);
+
+            // 3. Deal to Tableau
+            const slots = document.getElementById('tableau').querySelectorAll('.slot');
+            slots.forEach((slot, index) => {
+                const cardData = deck.pop();
+                const cardDiv = document.createElement('div');
+                cardDiv.className = `card ${cardData.color}`;
+                cardDiv.innerHTML = `${cardData.val}${cardData.suit}`;
+                slot.appendChild(cardDiv);
+            });
+
+            // 4. Show Deck Back
+            document.getElementById('deck').innerHTML = '<div class="card back"></div>';
+        }
+
+        function dealCard() {
+            if (deck.length > 0) {
+                const cardData = deck.pop();
+                const waste = document.getElementById('waste');
+                waste.innerHTML = `<div class="card ${cardData.color}">${cardData.val}${cardData.suit}</div>`;
+                if (deck.length === 0) document.getElementById('deck').innerHTML = '';
+            } else {
+                alert("Deck Empty! Restart to play again.");
+            }
+        }
+
+        // Start the game on load
+        initGame();
     </script>
 </body>
 </html>
