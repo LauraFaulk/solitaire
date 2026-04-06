@@ -1,4 +1,3 @@
-// Add this helper at the top of script.js to convert 'A', 'J', 'Q', 'K' to numbers
 const valueMap = { 'A': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10, 'J': 11, 'Q': 12, 'K': 13 };
 
 function createCardElement(cardData) {
@@ -6,7 +5,6 @@ function createCardElement(cardData) {
     cardDiv.className = `card ${cardData.color}`;
     cardDiv.innerHTML = `${cardData.val}${cardData.suit}`;
     
-    // THE SECRET SAUCE: Store data for the rules engine
     cardDiv.dataset.value = valueMap[cardData.val];
     cardDiv.dataset.color = cardData.color; // 'red' or 'black'
     
@@ -37,9 +35,7 @@ function initGame() {
     const slots = document.getElementById('tableau').querySelectorAll('.slot');
     slots.forEach((slot, index) => {
         const cardData = deck.pop();
-        const cardDiv = document.createElement('div');
-        cardDiv.className = `card ${cardData.color}`;
-        cardDiv.innerHTML = `${cardData.val}${cardData.suit}`;
+        const cardDiv = createCardElement(cardData);
         
         // ADDED: Attach the drag ability
         addDragEvents(cardDiv);
@@ -53,14 +49,13 @@ function initGame() {
 
 function dealCard() {
     const waste = document.getElementById('waste');
-    const deckSlot = document.getElementById('deck');
-    
     if (deck.length > 0) {
         const cardData = deck.pop();
         const cardDiv = createCardElement(cardData);
 
 	waste.innerHTML = '';
 	waste.appendChild(cardDiv);
+    }
 
         cardDiv.className = `card ${cardData.color}`;
         cardDiv.innerHTML = `${cardData.val}${cardData.suit}`;
