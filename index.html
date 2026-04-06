@@ -12,10 +12,12 @@
             font-family: 'Sour Gummy', sans-serif;
             color: white;
             margin: 0;
+	    padding: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
+	    overflow: hidden;
         }
 
         header { margin-top: 20px; text-align: center; }
@@ -25,30 +27,24 @@
         #game-container {
             display: flex;
             flex-direction: column;
-            gap: 20px;
-            width: 90%;
-            max-width: 1000px;
-            margin-top: 20px;
+            gap: 10px;
+            width: 95vw;
+            max-height: 80vh;
+            margin-top: 10px;
         }
 
-        .top-row {
+        .top-row, .tableau {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 10px;
-        }
-
-        .tableau {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 10px;
-            min-height: 400px;
+            gap: 8px;
         }
 
         .slot {
             aspect-ratio: 2/3;
-            border: 2px dashed rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
+            border: 1px dashed rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
             position: relative;
+	    max-height: 15vh;
         }
 
         /* CARD STYLING */
@@ -56,18 +52,22 @@
             width: 100%;
             height: 100%;
             background: white;
-            border-radius: 8px;
+            border-radius: 5px;
             position: absolute;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 1.2rem;
+            font-size: 1rem;
             color: black;
             box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
-            cursor: pointer;
+            cursor: grab;
             user-select: none;
+	    touch-action: none;
             border: 1px solid #999;
         }
+
+	.card:active { cursor: grabbing; 
+	}
 
         .card.red { color: #e94560; }
         .card.back { 
@@ -119,53 +119,6 @@
         <button onclick="initGame()">Restart Game</button>
     </div>
 
-    <script>
-        const suits = ['♠', '♥', '♦', '♣'];
-        const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
-        let deck = [];
-
-        function initGame() {
-            deck = [];
-            document.getElementById('tableau').querySelectorAll('.slot').forEach(s => s.innerHTML = '');
-            document.getElementById('waste').innerHTML = '';
-            
-            // 1. Create Deck
-            for (let suit of suits) {
-                for (let val of values) {
-                    deck.push({ val, suit, color: (suit === '♥' || suit === '♦') ? 'red' : 'black' });
-                }
-            }
-
-            // 2. Shuffle
-            deck.sort(() => Math.random() - 0.5);
-
-            // 3. Deal to Tableau
-            const slots = document.getElementById('tableau').querySelectorAll('.slot');
-            slots.forEach((slot, index) => {
-                const cardData = deck.pop();
-                const cardDiv = document.createElement('div');
-                cardDiv.className = `card ${cardData.color}`;
-                cardDiv.innerHTML = `${cardData.val}${cardData.suit}`;
-                slot.appendChild(cardDiv);
-            });
-
-            // 4. Show Deck Back
-            document.getElementById('deck').innerHTML = '<div class="card back"></div>';
-        }
-
-        function dealCard() {
-            if (deck.length > 0) {
-                const cardData = deck.pop();
-                const waste = document.getElementById('waste');
-                waste.innerHTML = `<div class="card ${cardData.color}">${cardData.val}${cardData.suit}</div>`;
-                if (deck.length === 0) document.getElementById('deck').innerHTML = '';
-            } else {
-                alert("Deck Empty! Restart to play again.");
-            }
-        }
-
-        // Start the game on load
-        initGame();
-    </script>
+    <script> src="script.js></script>
 </body>
 </html>
