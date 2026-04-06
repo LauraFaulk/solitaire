@@ -94,21 +94,93 @@ function addDragEvents(card) {
     card.ondragstart = function() { return false; };
 }
 
+// --- GLOBAL GAME STATE ---
 let score = 0;
 
-function checkDropLocation(card) {
-    // 1. Simple Scoring: Every time a card is moved to a new slot, +10 points
-    score += 10;
-    document.getElementById('score').innerText = score;
+function addDragEvents(card) {
+    card.onmousedown = function(event) {
+        event.preventDefault();
+        card.style.position = 'fixed';
+        card.style.zIndex = 1000;
 
-    // 2. The "Auto-Refill" Logic
-    // If a Tableau slot is now empty, we should ideally pull a card from the deck.
-    // For a basic version, let's just log it:
-    console.log("Card moved! Checking for empty slots...");
-    
-    // 3. Snap to Grid (Optional but recommended)
-    // You can add code here to detect if the card is 'near' a slot 
-    // and make it 'snap' into place perfectly.
+        function moveAt(pageX, pageY) {
+            card.style.left = pageX - 40 + 'px';
+            card.style.top = pageY - 60 + 'px';
+        }
+
+        moveAt(event.pageX, event.pageY);
+        document.addEventListener('mousemove', onMouseMove);
+
+        function onMouseMove(event) {
+            moveAt(event.pageX, event.pageY);
+        }
+
+        document.onmouseup = function(e) {
+            document.removeEventListener('mousemove', onMouseMove);
+            document.onmouseup = null;
+
+            // Check if the drop is valid
+            const isMoveValid = checkMove(card, e.clientX, e.clientY);
+
+            if (!isMoveValid) {
+                // If invalid, snap back to the original slot
+                card.style.position = 'relative';
+                card.style.left = '0';
+                card.style.top = '0';
+                card.style.zIndex = 1;
+            } else {
+                // If valid, increment score and check for empty slots
+                score += 10;
+                document.getElementById('score').innerText = score;
+                refillEmptySlots();
+            }
+        };
+    };
+    card.ondragstart = function() { return false; };
 }
+
+// THE "RULES" BRAIN
+function checkMove(draggedCard, mouseX, mouseY) {
+    // This looks for what is "under" your mouse when you let go
+    draggedCard.style.display = 'none'; // Temporarily hide to see what's under
+    let elementBelow = document.elementFromPoint(mouseX, mouseY);
+    draggedCard.style.display = 'flex';
+
+    if (!elementBelow) return false;
+
+    // Find the closest "Slot" or "Card" below
+    let targetSlot = elementBelow.closest('.slot');
+    
+    if (targetSlot) {
+        // RULE: For now, we allow moving to any empty slot or any card
+        // To add strict "King only on empty" or "Red on Black", 
+        // you would add IF statements here checking card.dataset values.
+        targetSlot.appendChild(draggedCard);
+        draggedCard.style.position = 'relative';
+        draggedCard.style.left = '0';
+        draggedCard.style.top = '0';
+        return true;
+    }
+    return false;
+}
+
+// AUTO-REFILL LOGIC
+function refillEmptySlots() {
+    const slots = document.getElementById('tableau').querySelectorAll('.slot');
+    slots.forEach(slot => {
+        if (slot.innerHTML === "" && deck.length > 0) {
+            const cardData = deck.pop();
+            const cardDiv = document.createElement('div');
+            cardDiv.className = `card ${cardData.color}`;
+            cardDiv.innerHTML = `${cardData.val}${cardData.suit}`;
+            
+            // Teach the new card how to move
+            addDragEvents(cardDiv);
+            slot.appendChild(cardDiv);
+            console.log("Refilled an empty slot!");
+        }
+    });
+}
+
 // Start the game on load
 initGame();
