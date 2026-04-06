@@ -84,8 +84,9 @@ function addDragEvents(card) {
         document.onmouseup = function() {
             document.removeEventListener('mousemove', onMouseMove);
             document.onmouseup = null;
-            // Lower the z-index slightly so the NEXT card goes on top
-            card.style.zIndex = 10; 
+            window.highestZ = (window.highestZ || 10) + 1;
+	    card.style.zIndex = window.highestZ;
+	    checkDropLocation(card); 
         };
     };
 
@@ -93,5 +94,21 @@ function addDragEvents(card) {
     card.ondragstart = function() { return false; };
 }
 
+let score = 0;
+
+function checkDropLocation(card) {
+    // 1. Simple Scoring: Every time a card is moved to a new slot, +10 points
+    score += 10;
+    document.getElementById('score').innerText = score;
+
+    // 2. The "Auto-Refill" Logic
+    // If a Tableau slot is now empty, we should ideally pull a card from the deck.
+    // For a basic version, let's just log it:
+    console.log("Card moved! Checking for empty slots...");
+    
+    // 3. Snap to Grid (Optional but recommended)
+    // You can add code here to detect if the card is 'near' a slot 
+    // and make it 'snap' into place perfectly.
+}
 // Start the game on load
 initGame();
