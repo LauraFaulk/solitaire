@@ -120,54 +120,52 @@ function checkMove(draggedCard, mouseX, mouseY) {
 
     if (!elementBelow) return false;
 
-    let targetSlot = elementBelow.closest('.slot');
-    if (!targetSlot) return false;
+    let target = elementBelow.closest('.slot');
+    if (!target) return false;
 
     const dVal = parseInt(draggedCard.dataset.value);
     const dColor = draggedCard.dataset.color;
     const dSuit = draggedCard.innerHTML.slice(-1);
-
-    const topCard = targetSlot.lastElementChild;
+    const topCard = target.lastElementChild;
 
     // Handle Foundation (Win Piles)
-    if (targetSlot.classList.contains('foundation')) {
+    if (target.classList.contains('foundation')) {
         if (!topCard) {
-            if (dVal === 1) return snapTo(draggedCard, targetSlot);
+            if (dVal === 1) return snapTo(draggedCard, target);
         } else {
             const tVal = parseInt(topCard.dataset.value);
             const tSuit = topCard.innerHTML.slice(-1);
-            if (dVal === tVal + 1 && dSuit === tSuit) return snapTo(draggedCard, targetSlot);
+            if (dVal === tVal + 1 && dSuit === tSuit) return snapTo(draggedCard, target);
         }
         return false;
     }
 
     // Handle Tableau (Main Board)
-    if (targetSlot.parentElement.id === "tableau") {
-    if (!topCard) {
-        if (dVal === 13) return snapTo(draggedCard, targetSlot); // Kings on empty
-    } else {
-        const tVal = parseInt(topCard.dataset.value);
-        const tColor = topCard.dataset.color;
-        // Rule: One lower and opposite color
-        if (tVal === dVal + 1 && tColor !== dColor) {
-	    return snapToSlot(draggedCard, targetSlot);
-	    }
-	}
+    if (target.parentElement.id === "tableau" || target.id.startsWith("f") === false) {
+        if (!topCard) {
+            // King on empty
+            if (dVal === 13) return snapTo(draggedCard, target);
+        } else {
+            const tVal = parseInt(topCard.dataset.value);
+            const tColor = topCard.dataset.color;
+            // Descending value and alternating color
+            if (tVal === dVal + 1 && tColor !== dColor) return snapTo(draggedCard, target);
+        }
     }
 
     return false;
 }
 
 function snapTo(card, target) {
-    slot.appendChild(card);
+    target.appendChild(card);
     card.style.position = 'relative';
     card.style.left = '0';
     card.style.top = '0';
     card.style.zIndex = 1;
 
     score += 10;
-    const scoreDiv = document.getElementById('score');
-    if (scoreDiv) scoreDiv.innerText = score;
+    const scoreDisplay = document.getElementById('score');
+    if (scoreDisplay) scoreDisplay.innerText = score;
 
     return true;
 }
