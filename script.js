@@ -1,46 +1,97 @@
-        const suits = ['♠', '♥', '♦', '♣'];
-        const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
-        let deck = [];
+const suits = ['♠', '♥', '♦', '♣'];
+const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+let deck = [];
 
-        function initGame() {
-            deck = [];
-            document.getElementById('tableau').querySelectorAll('.slot').forEach(s => s.innerHTML = '');
-            document.getElementById('waste').innerHTML = '';
+function initGame() {
+    deck = [];
+    document.getElementById('tableau').querySelectorAll('.slot').forEach(s => s.innerHTML = '');
+    document.getElementById('waste').innerHTML = '';
 
-            // 1. Create Deck
-            for (let suit of suits) {
-                for (let val of values) {
-                    deck.push({ val, suit, color: (suit === '♥' || suit === '♦') ? 'red' : 'black' });
-                }
-            }
+    // 1. Create Deck
+    for (let suit of suits) {
+        for (let val of values) {
+            deck.push({ val, suit, color: (suit === '♥' || suit === '♦') ? 'red' : 'black' });
+        }
+    }
 
-            // 2. Shuffle
-            deck.sort(() => Math.random() - 0.5);
+    // 2. Shuffle
+    deck.sort(() => Math.random() - 0.5);
 
-            // 3. Deal to Tableau
-            const slots = document.getElementById('tableau').querySelectorAll('.slot');
-            slots.forEach((slot, index) => {
-                const cardData = deck.pop();
-                const cardDiv = document.createElement('div');
-                cardDiv.className = `card ${cardData.color}`;
-                cardDiv.innerHTML = `${cardData.val}${cardData.suit}`;
-                slot.appendChild(cardDiv);
-            });
+    // 3. Deal to Tableau
+    const slots = document.getElementById('tableau').querySelectorAll('.slot');
+    slots.forEach((slot, index) => {
+        const cardData = deck.pop();
+        const cardDiv = document.createElement('div');
+        cardDiv.className = `card ${cardData.color}`;
+        cardDiv.innerHTML = `${cardData.val}${cardData.suit}`;
+        
+        // ADDED: Attach the drag ability
+        addDragEvents(cardDiv);
+        
+        slot.appendChild(cardDiv);
+    });
 
-            // 4. Show Deck Back
-            document.getElementById('deck').innerHTML = '<div class="card back"></div>';
+    // 4. Show Deck Back
+    document.getElementById('deck').innerHTML = '<div class="card back"></div>';
+}
+
+function dealCard() {
+    if (deck.length > 0) {
+        const cardData = deck.pop();
+        const waste = document.getElementById('waste');
+        const cardDiv = document.createElement('div');
+        cardDiv.className = `card ${cardData.color}`;
+        cardDiv.innerHTML = `${cardData.val}${cardData.suit}`;
+        
+        // ADDED: Attach the drag ability to the dealt card
+        addDragEvents(cardDiv);
+        
+        waste.innerHTML = ''; // Clear previous waste card
+        waste.appendChild(cardDiv);
+
+        if (deck.length === 0) document.getElementById('deck').innerHTML = '';
+    } else {
+        alert("Deck Empty! Restart to play again.");
+    }
+}
+
+// --- THE DRAG LOGIC (NEW SECTION) ---
+function addDragEvents(card) {
+    card.onmousedown = function(event) {
+        // Prevent clicking from doing other things
+        event.preventDefault();
+
+        // 1. Prepare card for floating
+        card.style.position = 'fixed';
+        card.style.zIndex = 1000;
+        
+        // Center the card on the cursor immediately
+        function moveAt(pageX, pageY) {
+            card.style.left = pageX - card.offsetWidth / 2 + 'px';
+            card.style.top = pageY - card.offsetHeight / 2 + 'px';
         }
 
-        function dealCard() {
-            if (deck.length > 0) {
-                const cardData = deck.pop();
-                const waste = document.getElementById('waste');
-                waste.innerHTML = `<div class="card ${cardData.color}">${cardData.val}${cardData.suit}</div>`;
-                if (deck.length === 0) document.getElementById('deck').innerHTML = '';
-            } else {
-                alert("Deck Empty! Restart to play again.");
-            }
+        moveAt(event.pageX, event.pageY);
+
+        function onMouseMove(event) {
+            moveAt(event.pageX, event.pageY);
         }
 
-        // Start the game on load
-        initGame();
+        // 2. Move the card as the mouse moves
+        document.addEventListener('mousemove', onMouseMove);
+
+        // 3. Drop the card
+        document.onmouseup = function() {
+            document.removeEventListener('mousemove', onMouseMove);
+            document.onmouseup = null;
+            // Lower the z-index slightly so the NEXT card goes on top
+            card.style.zIndex = 10; 
+        };
+    };
+
+    // Kill the browser's default drag-and-drop ghosting
+    card.ondragstart = function() { return false; };
+}
+
+// Start the game on load
+initGame();
