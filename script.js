@@ -67,8 +67,8 @@ function addDragEvents(card) {
         
         // Center the card on the cursor immediately
         function moveAt(pageX, pageY) {
-            card.style.left = pageX - card.offsetWidth / 2 + 'px';
-            card.style.top = pageY - card.offsetHeight / 2 + 'px';
+            card.style.left = pageX - 40 + 'px';
+            card.style.top = pageY - 60 + 'px';
         }
 
         moveAt(event.pageX, event.pageY);
