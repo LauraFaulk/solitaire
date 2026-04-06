@@ -16,7 +16,8 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-height: 100vh;
+            height: 100vh;
+	    width: 100vw
 	    overflow: hidden;
         }
 
@@ -27,41 +28,41 @@
         #game-container {
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            width: 95vw;
-            max-height: 80vh;
-            margin-top: 10px;
+            align-items: center;
+	    gap: 2vh;
+            padding-top: 2vh;
         }
+
+	:root {
+    	    /* Adjust these two numbers to find your "Perfect Large Size" */
+    	    --card-width: 12vw; 
+    	    --card-height: calc(12vw * 1.5); /* Maintains the 2:3 card ratio */
+	}
 
         .top-row, .tableau {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 8px;
-        }
+    	    display: grid;
+    	    grid-template-columns: repeat(7, 1fr);
+    	    gap: 1vw; /* Smaller gap to allow for bigger cards */
+    	    width: 95vw;
+    	    justify-items: center;
+	}
 
-        .slot, .foundation {
-	    background-color: rgba(255, 255, 255, 0.05);
-	    z-index: 1;
-            width: 80px;
-    	    height: 120px;
-    	    border: 2px dashed rgba(255, 255, 255, 0.2);
+        .slot, .card {
+    	    width: var(--card-width);
+    	    height: var(--card-height);
     	    border-radius: 8px;
-    	    position: relative;
         }
 
         /* CARD STYLING */
         .card {
-            width: 80px;
-            height: 120px;
             background: white;
-            border-radius: 5px;
             position: absolute;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 1.2rem;
+            font-size: 2.5vw;
             color: black;
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.4);
             cursor: grab;
             user-select: none;
             border: 1px solid #999;

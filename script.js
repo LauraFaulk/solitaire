@@ -77,8 +77,12 @@ function addDragEvents(card) {
         card.style.zIndex = 1000;
 
         function moveAt(pageX, pageY) {
-            card.style.left = pageX - offsetX + 'px';
-            card.style.top = pageY - offsetY + 'px';
+    	    // Dynamically calculate half-width and half-height
+    	    const halfWidth = card.offsetWidth / 2;
+    	    const halfHeight = card.offsetHeight / 2;
+    
+    	    card.style.left = pageX - halfWidth + 'px';
+    	    card.style.top = pageY - halfHeight + 'px';
         }
 
         moveAt(event.pageX, event.pageY);
