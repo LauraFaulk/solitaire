@@ -1,166 +1,119 @@
+// 1. CONSTANTS & STATE
 const valueMap = { 'A': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10, 'J': 11, 'Q': 12, 'K': 13 };
+const suits = ['♠', '♥', '♦', '♣'];
+const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+let deck = [];
+let score = 0;
 
+// 2. THE CARD FACTORY
 function createCardElement(cardData) {
     const cardDiv = document.createElement('div');
     cardDiv.className = `card ${cardData.color}`;
     cardDiv.innerHTML = `${cardData.val}${cardData.suit}`;
     
+    // Attach data for the rules engine
     cardDiv.dataset.value = valueMap[cardData.val];
-    cardDiv.dataset.color = cardData.color; // 'red' or 'black'
+    cardDiv.dataset.color = cardData.color;
     
     addDragEvents(cardDiv);
     return cardDiv;
 }
 
-const suits = ['♠', '♥', '♦', '♣'];
-const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
-let deck = [];
-
+// 3. GAME INITIALIZATION
 function initGame() {
     deck = [];
+    score = 0;
+    document.getElementById('score').innerText = score;
     document.getElementById('tableau').querySelectorAll('.slot').forEach(s => s.innerHTML = '');
     document.getElementById('waste').innerHTML = '';
 
-    // 1. Create Deck
+    // Create and Shuffle Deck
     for (let suit of suits) {
         for (let val of values) {
             deck.push({ val, suit, color: (suit === '♥' || suit === '♦') ? 'red' : 'black' });
         }
     }
-
-    // 2. Shuffle
     deck.sort(() => Math.random() - 0.5);
 
-    // 3. Deal to Tableau
+    // Deal to Tableau
     const slots = document.getElementById('tableau').querySelectorAll('.slot');
-    slots.forEach((slot, index) => {
+    slots.forEach((slot) => {
         const cardData = deck.pop();
         const cardDiv = createCardElement(cardData);
-        
-        // ADDED: Attach the drag ability
-        addDragEvents(cardDiv);
-        
         slot.appendChild(cardDiv);
     });
 
-    // 4. Show Deck Back
     document.getElementById('deck').innerHTML = '<div class="card back"></div>';
 }
 
+// 4. DEALING LOGIC
 function dealCard() {
     const waste = document.getElementById('waste');
     if (deck.length > 0) {
         const cardData = deck.pop();
         const cardDiv = createCardElement(cardData);
-
-	waste.innerHTML = '';
-	waste.appendChild(cardDiv);
-    }
-
-        cardDiv.className = `card ${cardData.color}`;
-        cardDiv.innerHTML = `${cardData.val}${cardData.suit}`;
+        waste.innerHTML = ''; 
+        waste.appendChild(cardDiv);
         
-        // ADDED: Attach the drag ability to the dealt card
-        addDragEvents(cardDiv);
-        
+        if (deck.length === 0) {
+            document.getElementById('deck').innerHTML = '<div class="refresh-icon" style="cursor:pointer; font-size:2rem; text-align:center;">🔄</div>';
+        }
     } else {
-        // DECK RESET: Move waste back to deck
-        const wasteCards = waste.querySelectorAll('.card');
-        if (wasteCards.length === 0 && deck.length === 0) {
-            alert("No more moves possible!");
-            return;
-        }
-        // Logic to refill deck array from a 'waste' array would go here
-        location.reload(); // Simple version: Restart the game
+        // If deck is empty, restart
+        location.reload();
     }
 }
-// --- THE DRAG LOGIC (NEW SECTION) ---
+
+// 5. DRAG & DROP ENGINE
 function addDragEvents(card) {
     card.onmousedown = function(event) {
-        // Prevent clicking from doing other things
         event.preventDefault();
-
-        // 1. Prepare card for floating
-        card.style.position = 'fixed';
-        card.style.zIndex = 1000;
         
-        // Center the card on the cursor immediately
-        function moveAt(pageX, pageY) {
-            card.style.left = pageX - 40 + 'px';
-            card.style.top = pageY - 60 + 'px';
-        }
-
-        moveAt(event.pageX, event.pageY);
-
-        function onMouseMove(event) {
-            moveAt(event.pageX, event.pageY);
-        }
-
-        // 2. Move the card as the mouse moves
-        document.addEventListener('mousemove', onMouseMove);
-
-        // 3. Drop the card
-        document.onmouseup = function() {
-            document.removeEventListener('mousemove', onMouseMove);
-            document.onmouseup = null;
-            window.highestZ = (window.highestZ || 10) + 1;
-	    card.style.zIndex = window.highestZ;
-	    checkDropLocation(card); 
-        };
-    };
-
-    // Kill the browser's default drag-and-drop ghosting
-    card.ondragstart = function() { return false; };
-}
-
-// --- GLOBAL GAME STATE ---
-let score = 0;
-
-function addDragEvents(card) {
-    card.onmousedown = function(event) {
-        event.preventDefault();
+        // Prepare for floating
+        const offsetX = 40; // Half of 80px width
+        const offsetY = 60; // Half of 120px height
+        
         card.style.position = 'fixed';
         card.style.zIndex = 1000;
 
         function moveAt(pageX, pageY) {
-            card.style.left = pageX - 40 + 'px';
-            card.style.top = pageY - 60 + 'px';
+            card.style.left = pageX - offsetX + 'px';
+            card.style.top = pageY - offsetY + 'px';
         }
 
         moveAt(event.pageX, event.pageY);
-        document.addEventListener('mousemove', onMouseMove);
 
         function onMouseMove(event) {
             moveAt(event.pageX, event.pageY);
         }
+
+        document.addEventListener('mousemove', onMouseMove);
 
         document.onmouseup = function(e) {
             document.removeEventListener('mousemove', onMouseMove);
             document.onmouseup = null;
 
-            // Check if the drop is valid
             const isMoveValid = checkMove(card, e.clientX, e.clientY);
 
             if (!isMoveValid) {
-                // If invalid, snap back to the original slot
+                // Snap back to original position if illegal move
                 card.style.position = 'relative';
                 card.style.left = '0';
                 card.style.top = '0';
                 card.style.zIndex = 1;
             } else {
-                // If valid, increment score and check for empty slots
+                // Success!
                 score += 10;
                 document.getElementById('score').innerText = score;
                 refillEmptySlots();
             }
         };
     };
-    card.ondragstart = function() { return false; };
+    card.ondragstart = () => false;
 }
 
-// THE "RULES" BRAIN
+// 6. THE RULES ENGINE
 function checkMove(draggedCard, mouseX, mouseY) {
-    // This looks for what is "under" your mouse when you let go
     draggedCard.style.visibility = 'hidden';
     let elementBelow = document.elementFromPoint(mouseX, mouseY);
     draggedCard.style.visibility = 'visible';
@@ -168,95 +121,57 @@ function checkMove(draggedCard, mouseX, mouseY) {
     if (!elementBelow) return false;
 
     let targetSlot = elementBelow.closest('.slot') || elementBelow.closest('.foundation');
+    if (!targetSlot) return false;
 
-    if (targetSlot) {
-	const draggedVal = parseInt(draggedCard.dataset.value);
-	const draggedColor = draggedCard.dataset.color;
-	const topCard = targetSlot.lastElementChild;
+    const dVal = parseInt(draggedCard.dataset.value);
+    const dColor = draggedCard.dataset.color;
+    const topCard = targetSlot.lastElementChild;
 
-    if (!topCard) {
-	if (draggedVal ===13) {
-	    targetSlot.appendChild(draggedCard);
-	    snapToSlot(draggedCard);
-	    return true;
-	}
-    } else {
-            const topVal = parseInt(topCard.dataset.value);
-            const topColor = topCard.dataset.color;
-
-            // Rule: One lower AND opposite color
-            if (topVal === draggedVal + 1 && topColor !== draggedColor) {
-                targetSlot.appendChild(draggedCard);
-                snapToSlot(draggedCard);
-                return true;
-            }
-	}
+    // Handle Foundation (Win Piles)
+    if (targetSlot.classList.contains('foundation')) {
+        const dSuit = draggedCard.innerHTML.slice(-1);
+        if (!topCard) {
+            if (dVal === 1) return snapToSlot(draggedCard, targetSlot);
+        } else {
+            const tVal = parseInt(topCard.dataset.value);
+            const tSuit = topCard.innerHTML.slice(-1);
+            if (dVal === tVal + 1 && dSuit === tSuit) return snapToSlot(draggedCard, targetSlot);
+        }
+        return false;
     }
+
+    // Handle Tableau (Main Board)
+    if (!topCard) {
+        if (dVal === 13) return snapToSlot(draggedCard, targetSlot); // Kings on empty
+    } else {
+        const tVal = parseInt(topCard.dataset.value);
+        const tColor = topCard.dataset.color;
+        // Rule: One lower and opposite color
+        if (tVal === dVal + 1 && tColor !== dColor) return snapToSlot(draggedCard, targetSlot);
+    }
+
     return false;
 }
 
-// NEW: Win Condition Logic
-function handleFoundationMove(card, pile) {
-    const cardVal = parseInt(card.dataset.value);
-    const cardSuit = card.innerHTML.slice(-1); // Gets the symbol
-    const topCard = pile.lastElementChild;
-
-    if (!topCard) {
-        if (cardVal === 1) { // Only Aces start a foundation
-            pile.appendChild(card);
-            snapToSlot(card);
-            score += 50; // Big points for foundation!
-            return true;
-        }
-    } else {
-        const topVal = parseInt(topCard.dataset.value);
-        const topSuit = topCard.innerHTML.slice(-1);
-
-        // Rule: Same suit AND one value higher
-        if (cardVal === topVal + 1 && cardSuit === topSuit) {
-            pile.appendChild(card);
-            snapToSlot(card);
-            score += 50;
-            checkWin();
-            return true;
-        }
-    }
-    return false;
-}
-
-function checkWin() {
-    const foundations = document.querySelectorAll('.foundation');
-    let totalCards = 0;
-    foundations.forEach(f => totalCards += f.childElementCount);
-    if (totalCards === 52) {
-        alert("NERD ARCADE CHAMPION! You won Solitaire!");
-    }
-}
-
-function snapToSlot(card) {
+function snapToSlot(card, slot) {
+    slot.appendChild(card);
     card.style.position = 'relative';
     card.style.left = '0';
     card.style.top = '0';
     card.style.zIndex = 1;
+    return true;
 }
 
-// AUTO-REFILL LOGIC
 function refillEmptySlots() {
     const slots = document.getElementById('tableau').querySelectorAll('.slot');
     slots.forEach(slot => {
         if (slot.innerHTML === "" && deck.length > 0) {
             const cardData = deck.pop();
-            const cardDiv = document.createElement('div');
-            cardDiv.className = `card ${cardData.color}`;
-            cardDiv.innerHTML = `${cardData.val}${cardData.suit}`;
-            
-            // Teach the new card how to move
-            addDragEvents(cardDiv);
-            slot.appendChild(cardDiv);
-            console.log("Refilled an empty slot!");
+            const cardElement = createCardElement(cardData);
+            slot.appendChild(cardElement);
         }
     });
 }
 
-// Start the game on load
+// Start Game
 initGame();
