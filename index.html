@@ -4,131 +4,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nerd Arcade Solitaire</title>
-    <link href="https://fonts.googleapis.com/css2?family=Sour+Gummy:wght@400;700;900&display=swap" rel="stylesheet">
-    
-
+    <link href="https://fonts.googleapis.com/css2?family=Sour+Gummy:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --card-width: 10vw;
-            --card-height: calc(10vw * 1.5);
-            --tableau-overlap: 3vw;
+            --card-width: 10vw; 
+            --card-height: calc(10vw * 1.5); 
         }
 
         body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
             background: radial-gradient(#0a4d21, #052912);
             font-family: 'Sour Gummy', sans-serif;
             color: white;
-            margin: 0;
-	    padding: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            height: 100vh;
-	    width: 100vw
-	    overflow: hidden;
-            min-height: 100vh;
-            width: 100vw;
-            overflow: hidden;
         }
 
-        header { margin-top: 20px; text-align: center; }
-        h1 { font-size: 6rem; color: #00d2ff; text-shadow: 0 0 10px #00d2ff; margin: 0; }
-
-        /* GAME LAYOUT */
         #game-container {
-	    width: 100vw
             width: 100vw;
             display: flex;
             flex-direction: column;
             align-items: center;
-	    gap: 20px;
             gap: 20px;
+            padding-top: 20px;
         }
 
-	:root {
-    	    /* Adjust these two numbers to find your "Perfect Large Size" */
-    	    --card-width: 10vw; 
-    	    --card-height: calc(10vw * 1.5); 
-	}
-
-        .top-row {
-    	    display: grid;
-	    grid-template-columns: repeat(7, 1fr);
-	    grid-template-rows: auto;
-	    gap: 1vw;
-	    width: 95vw;
-	    margin: 10px auto;
-    	    justify-items: center;
-	    align-items: start;
-	}
-
-
-	.tableau {
-	    display: grid;
-	    grid-template-columns: repeat(7, 1fr);
-	    gap: 1vw;
-	    justify-items: center;
-	    width: 95vw;
-	    margin: 20px auto 0 auto;
-	}
-
-	#tableau .slot .card {
-    	    position: absolute; /* They float relative to the slot */
-    	    top: 0;
-    	    left: 0;
-	}
-
-	/* Use the "Sibling Selector" to offset cards */
-	/* Card 2 is shifted down 30px from the top of the slot */
-	#tableau .slot .card:nth-child(2) { top: 3vw; }
-	#tableau .slot .card:nth-child(3) { top: 6vw; }
-	#tableau .slot .card:nth-child(4) { top: 9vw; }
-	#tableau .slot .card:nth-child(5) { top: 12vw; }
-	#tableau .slot .card:nth-child(6) { top: 15vw; }
-	#tableau .slot .card:nth-child(7) { top: 18vw; }
-	#tableau .slot .card:nth-child(8) { top: 21vw; }
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 1vw;
+        .top-row, .tableau {
+            display: grid !important;
+            grid-template-columns: repeat(7, 1fr) !important; 
             width: 95vw;
-            margin: 10px auto;
-            justify-items: center;
-            align-items: start;
-        }
-
-        .tableau {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
             gap: 1vw;
             justify-items: center;
-            width: 95vw;
-            margin: 20px auto 0 auto;
-        }
-
-        .spacer {
-    	    display: block;
-    	    width: var(--card-width);
-	    height: var(--card-height);
-	    visibility: hidden;
-	}
-
-	.slot {
-    	    width: var(--card-width);
-    	    height: var(--card-height);
-    	    border: 2px dashed rgba(255, 255, 255, 0.2);
-    	    border-radius: 8px;
-    	    position: relative;
-    	    box-sizing: border-box;
-	    background-color: rgba(255, 255, 255, 0.05);
-    	    display: block;
-        }
-
-        /* CARD STYLING */
-            display: block;
-            width: var(--card-width);
-            height: var(--card-height);
-            visibility: hidden;
         }
 
         .slot {
@@ -137,207 +45,89 @@
             border: 2px dashed rgba(255, 255, 255, 0.2);
             border-radius: 8px;
             position: relative;
-            box-sizing: border-box;
             background-color: rgba(255, 255, 255, 0.05);
         }
 
-        .tableau .slot {
-            height: calc(var(--card-height) + 6 * var(--tableau-overlap));
+        .spacer {
+            width: var(--card-width);
+            height: var(--card-height);
+            visibility: hidden;
         }
 
+        /* Card Styling */
         .card {
-            /* ... (Keep your width, height, background, border-radius, border, box-shadow) ... */
-    	    width: var(--card-width);
-    	    height: var(--card-height);
-    	    background: white;
-    	    border-radius: 8px;
-    	    border: 1px solid #999;
-    	    box-shadow: 2px 2px 8px rgba(0,0,0,0.4);
-    	    box-sizing: border-box;
-    	    cursor: grab;
-    	    user-select: none;
-    
-    	    /* CRITICAL: Set to relative so corners align inside the card */
-    	    position: relative; 
-    
-    	    /* Font style for the jumbo numbers */
-    	    font-family: 'Sour Gummy', sans-serif;
-    	    font-size: 3vw; /* Jumbo but balanced with the card size */
-    	    font-weight: bold;
-    	    line-height: 1; /* Tight line height for corner stacking */
-	}
-
-	/* Styles for the individual val/suit pieces */
-	.card .card-corner {
-    	    position: absolute;
-    	    display: flex;
-    	    flex-direction: column;
-    	    align-items: center;
-    	    width: 25%; /* Give them a little room to breathe */
-    	    text-align: center;
-	    padding: 2px;
-	}
-
-	/* --- Position the Top Right corner --- */
-	.card .top-right {
-    	    top: 5px;
-    	    right: 5px;
-	}
-
-	/* --- Position and Rotate the Bottom Left corner --- */
-	.card .bottom-left {
-    	    bottom: 5px;
-    	    leftt: 5px;
-    	    transform: rotate(180deg); /* Classic card design rule */
-	}
-
-	/* Make sure the colors apply to the corner elements */
-	.card.red .card-corner { color: #d63031; }
-	.card.black .card-corner { color: black; }	
-
-	.card:active { cursor: grabbing; 
-	}
-
-        .card.red { color: #e94560; }
-        .card.back { 
-            background: #00d2ff; 
             width: var(--card-width);
             height: var(--card-height);
             background: white;
             border-radius: 8px;
             border: 1px solid #999;
             box-shadow: 2px 2px 8px rgba(0,0,0,0.4);
-            box-sizing: border-box;
+            position: absolute;
             cursor: grab;
-            user-select: none;
-            position: relative;
-            font-family: 'Sour Gummy', sans-serif;
+            color: black;
             font-size: 3vw;
             font-weight: bold;
-            line-height: 1;
         }
+
+        .card.red { color: #d63031; }
+        .card.black { color: #2d3436; }
 
         .card .card-corner {
             position: absolute;
             display: flex;
             flex-direction: column;
             align-items: center;
-            width: 25%;
-            text-align: center;
-            padding: 2px;
+            line-height: 0.9;
+            padding: 4px;
         }
 
-        .card .top-left {
-            top: 5px;
-            left: 5px;
+        .top-left { top: 2px; left: 2px; }
+        .bottom-right { bottom: 2px; right: 2px; transform: rotate(180deg); }
+
+        /* Stacking Logic for Tableau */
+        .tableau .slot .card {
+            position: absolute;
+            top: 0;
+            left: 0;
         }
 
-        .card .bottom-right {
-            bottom: 5px;
-            right: 5px;
-            transform: rotate(180deg);
-        }
+        .tableau .slot .card:nth-child(2) { top: 3vw; }
+        .tableau .slot .card:nth-child(3) { top: 6vw; }
+        .tableau .slot .card:nth-child(4) { top: 9vw; }
+        .tableau .slot .card:nth-child(5) { top: 12vw; }
+        .tableau .slot .card:nth-child(6) { top: 15vw; }
 
-        .card.red .card-corner { color: #d63031; }
-        .card.black .card-corner { color: black; }
-        .card:active { cursor: grabbing; }
-
-        .card.back {
-            background: #00d2ff;
-            background-image: repeating-linear-gradient(45deg, #00d2ff, #00d2ff 10px, #0099bb 10px, #0099bb 20px);
-        }
-
+        /* UI Controls */
         .controls {
-    	    position: absolute;
-	    top: 20px;
-    	    right: 20px;
-    	    z-index: 2000; /* Ensures it stays above floating cards */
-	}
-
-	.controls button {
-    	    padding: 10px 20px;
-    	    font-family: 'Sour Gummy', sans-serif;
-    	    background-color: #ff4757; /* A nice "arcade red" */
-    	    color: white;
-    	    border: none;
-    	    border-radius: 5px;
-    	    cursor: pointer;
-    	    box-shadow: 0 4px 0 #b33939; /* 3D effect */
-    	    transition: all 0.2s;
-	}
-
-	.controls button:hover {
-    	    background-color: #ff6b81;
-     	    transform: translateY(-2px);
-	}
-
-	.controls button:active {
-    	    transform: translateY(2px);
-    	    box-shadow: none;
-	}
-	.refresh-icon {
-    	    font-size: 2rem;
-    	    display: flex;
-    	    justify-content: center;
-    	    align-items: center;
-    	    height: 100%;
-    	    cursor: pointer;
-    	    color: rgba(255, 255, 255, 0.5);
-	}
+            position: absolute;
+            top: 20px;
+            right: 20px;
             z-index: 2000;
         }
 
-        .controls button {
+        button {
+            padding: 10px 20px;
+            background: #ff4757;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            font-family: 'Sour Gummy', sans-serif;
             box-shadow: 0 4px 0 #b33939;
-            transition: all 0.2s;
         }
 
-        .controls button:hover {
-
-        .controls button:active {
-            transform: translateY(2px);
-            box-shadow: none;
-        }
-
-        .refresh-icon {
-            font-size: 2rem;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-            cursor: pointer;
-            color: rgba(255, 255, 255, 0.5);
-        }
+        button:active { transform: translateY(2px); box-shadow: none; }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>Solitaire</h1>
-        
-    </header>
+    <div class="controls">
+        <span style="margin-right:15px">Score: <span id="score">0</span></span>
+        <button onclick="initGame()">Restart Game</button>
+    </div>
 
     <div id="game-container">
         <div class="top-row">
-	        <div class="slot" id="deck" onclick="dealCard()"></div>
-    	    
-	        <div class="slot" id="waste"></div>
-    	    
-		<div class="spacer"></div>
-        	
-		<div class="slot foundation" id="f1"></div>
-        	<div class="slot foundation" id="f2"></div>
-        	<div class="slot foundation" id="f3"></div>
-        	<div class="slot foundation" id="f4"></div>
-    	    </div>
-            
-	    <div id="tableau" class="tableau">
-		</div>
-	    <div class="tableau" id="tableau">
             <div class="slot" id="deck" onclick="dealCard()"></div>
             <div class="slot" id="waste"></div>
             <div class="spacer"></div>
@@ -347,7 +137,7 @@
             <div class="slot foundation" id="f4"></div>
         </div>
 
-        <div class="tableau" id="tableau">
+        <div id="tableau" class="tableau">
             <div class="slot"></div>
             <div class="slot"></div>
             <div class="slot"></div>
@@ -358,21 +148,6 @@
         </div>
     </div>
 
-    <div class="controls">
-        <span style="margin-right: 15px; font-weight: bold; font-size: 1.2rem;">Score: <span id="score">0</span></span>
-	<button onclick="initGame()">Restart Game</button>
-        <button onclick="initGame()">Restart Game</button>
-    </div>
-
     <script src="script.js"></script>
 </body>
-</html>            background-color: #ff6b81;
-            transform: translateY(-2px);
-        }
-            padding: 10px 20px;
-            font-family: 'Sour Gummy', sans-serif;
-            background-color: #ff4757;
-            position: absolute;
-            top: 20px;
-            right: 20px;
-
+</html>
