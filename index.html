@@ -69,6 +69,19 @@
             font-weight: bold;
         }
 
+	/* This replaces your gray background with a Memphis pattern */
+	.card-back {
+    	    background-color: #ffffff;
+    	    background-image: 
+                radial-gradient(#333 10%, transparent 10%),
+                radial-gradient(#333 10%, transparent 10%),
+                linear-gradient(45deg, #ff4757 25%, transparent 25%, transparent 75%, #ff4757 75%, #ff4757),
+                linear-gradient(-45deg, #2ed573 25%, transparent 25%, transparent 75%, #2ed573 75%, #2ed573);
+    	    background-size: 20px 20px, 20px 20px, 40px 40px, 40px 40px;
+    	    background-position: 0 0, 10px 10px, 0 0, 0 0;
+    	    border: 3px solid white; /* Classic pop-art border */
+	}
+
         .card.red { color: #d63031; }
         .card.black { color: #2d3436; }
 

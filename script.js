@@ -27,6 +27,9 @@ function createCardElement(cardData) {
 
 function initGame() {
     deck = [];
+    // 4. Show Deck Back with Memphis Style
+    const deckSlot = document.getElementById('deck');
+    deckSlot.innerHTML = '<div class="card card-back"></div>';
     score = 0;
     document.getElementById('score').innerText = score;
     document.querySelectorAll('.slot').forEach(s => s.innerHTML = '');
@@ -49,10 +52,16 @@ function initGame() {
 
 function dealCard() {
     const waste = document.getElementById('waste');
+    const deckSlot = document.getElementById('deck');
     if (deck.length > 0) {
         const cardData = deck.pop();
         waste.innerHTML = '';
         waste.appendChild(createCardElement(cardData));
+
+     // If that was the last card, show the "Refresh" icon instead
+        if (deck.length === 0) {
+            deckSlot.innerHTML = '<div class="refresh-icon" style="cursor:pointer; font-size:2rem; text-align:center; padding-top:25%;">🔄</div>';
+        }	
     } else {
         initGame();
     }
