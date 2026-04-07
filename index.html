@@ -6,19 +6,30 @@
     <title>Nerd Arcade Solitaire</title>
     <link href="https://fonts.googleapis.com/css2?family=Sour+Gummy:wght@400;700;900&display=swap" rel="stylesheet">
     
+
     <style>
+        :root {
+            --card-width: 10vw;
+            --card-height: calc(10vw * 1.5);
+            --tableau-overlap: 3vw;
+        }
+
         body {
             background: radial-gradient(#0a4d21, #052912);
             font-family: 'Sour Gummy', sans-serif;
             color: white;
             margin: 0;
 	    padding: 0;
+            padding: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
             height: 100vh;
 	    width: 100vw
 	    overflow: hidden;
+            min-height: 100vh;
+            width: 100vw;
+            overflow: hidden;
         }
 
         header { margin-top: 20px; text-align: center; }
@@ -27,10 +38,12 @@
         /* GAME LAYOUT */
         #game-container {
 	    width: 100vw
+            width: 100vw;
             display: flex;
             flex-direction: column;
             align-items: center;
 	    gap: 20px;
+            gap: 20px;
         }
 
 	:root {
@@ -75,6 +88,23 @@
 	#tableau .slot .card:nth-child(6) { top: 15vw; }
 	#tableau .slot .card:nth-child(7) { top: 18vw; }
 	#tableau .slot .card:nth-child(8) { top: 21vw; }
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1vw;
+            width: 95vw;
+            margin: 10px auto;
+            justify-items: center;
+            align-items: start;
+        }
+
+        .tableau {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1vw;
+            justify-items: center;
+            width: 95vw;
+            margin: 20px auto 0 auto;
+        }
 
         .spacer {
     	    display: block;
@@ -95,6 +125,26 @@
         }
 
         /* CARD STYLING */
+            display: block;
+            width: var(--card-width);
+            height: var(--card-height);
+            visibility: hidden;
+        }
+
+        .slot {
+            width: var(--card-width);
+            height: var(--card-height);
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            position: relative;
+            box-sizing: border-box;
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .tableau .slot {
+            height: calc(var(--card-height) + 6 * var(--tableau-overlap));
+        }
+
         .card {
             /* ... (Keep your width, height, background, border-radius, border, box-shadow) ... */
     	    width: var(--card-width);
@@ -151,6 +201,49 @@
         .card.red { color: #e94560; }
         .card.back { 
             background: #00d2ff; 
+            width: var(--card-width);
+            height: var(--card-height);
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #999;
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.4);
+            box-sizing: border-box;
+            cursor: grab;
+            user-select: none;
+            position: relative;
+            font-family: 'Sour Gummy', sans-serif;
+            font-size: 3vw;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        .card .card-corner {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 25%;
+            text-align: center;
+            padding: 2px;
+        }
+
+        .card .top-left {
+            top: 5px;
+            left: 5px;
+        }
+
+        .card .bottom-right {
+            bottom: 5px;
+            right: 5px;
+            transform: rotate(180deg);
+        }
+
+        .card.red .card-corner { color: #d63031; }
+        .card.black .card-corner { color: black; }
+        .card:active { cursor: grabbing; }
+
+        .card.back {
+            background: #00d2ff;
             background-image: repeating-linear-gradient(45deg, #00d2ff, #00d2ff 10px, #0099bb 10px, #0099bb 20px);
         }
 
@@ -182,7 +275,6 @@
     	    transform: translateY(2px);
     	    box-shadow: none;
 	}
-
 	.refresh-icon {
     	    font-size: 2rem;
     	    display: flex;
@@ -192,6 +284,34 @@
     	    cursor: pointer;
     	    color: rgba(255, 255, 255, 0.5);
 	}
+            z-index: 2000;
+        }
+
+        .controls button {
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #b33939;
+            transition: all 0.2s;
+        }
+
+        .controls button:hover {
+
+        .controls button:active {
+            transform: translateY(2px);
+            box-shadow: none;
+        }
+
+        .refresh-icon {
+            font-size: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.5);
+        }
     </style>
 </head>
 <body>
@@ -218,6 +338,16 @@
 	    <div id="tableau" class="tableau">
 		</div>
 	    <div class="tableau" id="tableau">
+            <div class="slot" id="deck" onclick="dealCard()"></div>
+            <div class="slot" id="waste"></div>
+            <div class="spacer"></div>
+            <div class="slot foundation" id="f1"></div>
+            <div class="slot foundation" id="f2"></div>
+            <div class="slot foundation" id="f3"></div>
+            <div class="slot foundation" id="f4"></div>
+        </div>
+
+        <div class="tableau" id="tableau">
             <div class="slot"></div>
             <div class="slot"></div>
             <div class="slot"></div>
@@ -231,8 +361,18 @@
     <div class="controls">
         <span style="margin-right: 15px; font-weight: bold; font-size: 1.2rem;">Score: <span id="score">0</span></span>
 	<button onclick="initGame()">Restart Game</button>
+        <button onclick="initGame()">Restart Game</button>
     </div>
 
     <script src="script.js"></script>
 </body>
-</html>
+</html>            background-color: #ff6b81;
+            transform: translateY(-2px);
+        }
+            padding: 10px 20px;
+            font-family: 'Sour Gummy', sans-serif;
+            background-color: #ff4757;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+
