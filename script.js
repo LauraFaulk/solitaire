@@ -106,6 +106,12 @@ function addDragEvents(card) {
                 card.style.left = '0';
                 card.style.top = ''; // Let CSS nth-child reset it
                 card.style.zIndex = '';
+	    } else {
+        	// Move was valid! snapTo already handles the parent change.
+        	// We just ensure the styles are clean.
+        	card.style.position = 'absolute';
+        	card.style.left = '0';
+        	card.style.top = '';
             }
         };
     };
