@@ -28,19 +28,17 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 20px;
-            padding-top: 20px;
+            padding-top: 2vh;
         }
 
-        .top-row {
+        .top-row, .tableau {
     	    display: grid !important;
-    	    /* This strictly defines 7 equal slices of the screen */
-    	    grid-template-columns: repeat(7, 1fr) !important; 
-    	    width: 98vw;
-    	    margin: 10px auto;
-    	    gap: 1vw;
-    	    align-items: center; /* Vertically centers the button with the cards */
+    	    grid-template-columns: repeat(7, 1fr) !important;
+    	    width: 95vw;
+    	    max-width: 1400px;
+    	    gap: 1.5vw; /* Consistent spacing */
     	    justify-items: center;
+    	    align-items: start;
 	}
 
 	.ui-hub {
@@ -48,29 +46,29 @@
     	    flex-direction: column;
     	    justify-content: center;
     	    align-items: center;
-    	    gap: 5px;
-    	    /* This ensures the UI doesn't push the grid wider than a card */
-    	    width: var(--card-width); 
+    	    width: 100%; 
     	    height: var(--card-height);
+	    gap: 10px;
 	}
 
 	.score-box {
-    	    font-size: 1.2vw;
+    	    font-size: 1.4vw;
     	    color: #ffd32a;
     	    text-shadow: 1px 1px 2px #000;
-    	    white-space: nowrap;
+    	    font-weight: bold;
 	}
 
 	button {
-    	    padding: 6px 12px;
-    	    font-size: 0.9vw;
-    	    width: 80%; /* Keeps it contained */
+    	    font-family: 'Sour Gummy', sans-serif;
     	    background: #ff4757;
     	    color: white;
-    	    border-radius: 4px;
     	    border: none;
+    	    padding: 8px 12px;
+    	    border-radius: 5px;
     	    cursor: pointer;
-    	    box-shadow: 0 3px 0 #b33939;
+    	    font-size: 1vw;
+    	    box-shadow: 0 4px 0 #b33939;
+    	    width: 80%;
 	}
 
 	/* Ensure the foundations don't have any weird margins */
@@ -84,7 +82,6 @@
             border: 2px dashed rgba(255, 255, 255, 0.2);
             border-radius: 8px;
             position: relative;
-            background-color: rgba(255, 255, 255, 0.05);
         }
 
         /* Card Styling */
@@ -213,35 +210,16 @@
     </style>
 </head>
 <body>
-
-    <div class="controls">
-        <span style="margin-right:15px">Score: <span id="score">0</span></span>
-        <button onclick="initGame()">Restart Game</button>
-    </div>
-
     <div id="game-container">
         <div class="top-row">
-            <div class="slot" id="deck" onclick="dealCard()"></div>
-            <div class="slot" id="waste"></div>
-            <div class="ui-hub">
-		<div class="score-box">Score: <span id="score">0</span></div>
-        	<button onclick="initGame()">Restart</button>
-    	    </div>
-            <div class="slot foundation" id="f1"></div>
-            <div class="slot foundation" id="f2"></div>
-            <div class="slot foundation" id="f3"></div>
-            <div class="slot foundation" id="f4"></div>
-        </div>
+            <div class="slot" id="deck" onclick="dealCard()"></div> <div class="slot" id="waste"></div>                    <div class="ui-hub">                                   <div class="score-box">Score: <span id="score">0</span></div>
+                <button onclick="restartGame()">Restart</button>
+            </div>
+
+            <div class="slot foundation" id="f1"></div>            <div class="slot foundation" id="f2"></div>            <div class="slot foundation" id="f3"></div>            <div class="slot foundation" id="f4"></div>            </div>
 
         <div id="tableau" class="tableau">
-            <div class="slot"></div>
-            <div class="slot"></div>
-            <div class="slot"></div>
-            <div class="slot"></div>
-            <div class="slot"></div>
-            <div class="slot"></div>
-            <div class="slot"></div>
-        </div>
+            <div class="slot"></div> <div class="slot"></div> <div class="slot"></div> <div class="slot"></div> <div class="slot"></div> <div class="slot"></div> <div class="slot"></div> </div>
     </div>
 
     <script src="script.js"></script>

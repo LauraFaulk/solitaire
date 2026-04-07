@@ -178,4 +178,8 @@ function snapTo(card, target) {
     return true;
 }
 
-initGame();
+function restartGame() {
+    if(confirm("Start a new game?")) {
+        initGame();
+    }
+}
