@@ -73,10 +73,29 @@ function dealCard() {
 
      // If that was the last card, show the "Refresh" icon instead
         if (deck.length === 0) {
-            deckSlot.innerHTML = '<div class="refresh-icon" style="cursor:pointer; font-size:2rem; text-align:center; padding-top:25%;">🔄</div>';
-        }	
+            deckSlot.innerHTML = '<div class="recycle-ui">🔄</div>';
+        }
     } else {
-        initGame();
+
+	// --- RECYCLE MODE ---
+        const wasteCards = waste.querySelectorAll('.card');
+        
+        if (wasteCards.length > 0) {
+            // Take cards from waste and put them back into the deck array
+            // We reverse them so the order stays consistent with a real deck flip
+            const newDeck = [];
+            wasteCards.forEach(cardDiv => {
+                newDeck.push({
+                    val: Object.keys(valueMap).find(key => valueMap[key] == cardDiv.dataset.value),
+                    suit: cardDiv.dataset.suit,
+                    color: cardDiv.dataset.color
+                });
+            });
+            
+            deck = newDeck.reverse(); // Flip the pile over
+            waste.innerHTML = ''; // Clear the waste pile
+            deckSlot.innerHTML = '<div class="card card-back"></div>'; // Show Memphis back again
+        }
     }
 }
 
