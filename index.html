@@ -70,16 +70,20 @@
         }
 
 	/* This replaces your gray background with a Memphis pattern */
-	.card-back {
-    	    background-color: #ffffff;
+	/* We combine .card and .card-back to ensure it overrides the white background */
+	.card.card-back {
+    	    background-color: #ffffff !important;
     	    background-image: 
-                radial-gradient(#333 10%, transparent 10%),
-                radial-gradient(#333 10%, transparent 10%),
-                linear-gradient(45deg, #ff4757 25%, transparent 25%, transparent 75%, #ff4757 75%, #ff4757),
-                linear-gradient(-45deg, #2ed573 25%, transparent 25%, transparent 75%, #2ed573 75%, #2ed573);
-    	    background-size: 20px 20px, 20px 20px, 40px 40px, 40px 40px;
-    	    background-position: 0 0, 10px 10px, 0 0, 0 0;
-    	    border: 3px solid white; /* Classic pop-art border */
+        	radial-gradient(#333 10%, transparent 10%),
+        	radial-gradient(#333 10%, transparent 10%),
+        	linear-gradient(45deg, #ff4757 25%, transparent 25%, transparent 75%, #ff4757 75%, #ff4757),
+        	linear-gradient(-45deg, #2ed573 25%, transparent 25%, transparent 75%, #2ed573 75%, #2ed573) !important;
+    	    background-size: 20px 20px, 20px 20px, 40px 40px, 40px 40px !important;
+    	    background-position: 0 0, 10px 10px, 0 0, 0 0 !important;
+    	    border: 3px solid #000 !important; /* Black border makes the Memphis pop */
+	}
+	.card-back .card-corner {
+    	    display: none !important;
 	}
 
         .card.red { color: #d63031; }

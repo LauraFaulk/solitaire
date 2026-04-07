@@ -27,27 +27,40 @@ function createCardElement(cardData) {
 
 function initGame() {
     deck = [];
-    // 4. Show Deck Back with Memphis Style
-    const deckSlot = document.getElementById('deck');
-    deckSlot.innerHTML = '<div class="card card-back"></div>';
     score = 0;
-    document.getElementById('score').innerText = score;
+    const scoreElement = document.getElementById('score');
+    if (scoreElement) scoreElement.innerText = score;
+    
+    // Clear all slots first
     document.querySelectorAll('.slot').forEach(s => s.innerHTML = '');
 
+    // Create the deck
     for (let suit of suits) {
         for (let val of values) {
             deck.push({ val, suit, color: (suit === '♥' || suit === '♦') ? 'red' : 'black' });
         }
     }
+    
+    // Shuffle
     deck.sort(() => Math.random() - 0.5);
 
-    const slots = document.getElementById('tableau').querySelectorAll('.slot');
-    slots.forEach(slot => {
-        const cardData = deck.pop();
-        slot.appendChild(createCardElement(cardData));
-    });
+    // Deal to Tableau
+    const tableau = document.getElementById('tableau');
+    if (tableau) {
+        const slots = tableau.querySelectorAll('.slot');
+        slots.forEach(slot => {
+            if (deck.length > 0) {
+                const cardData = deck.pop();
+                slot.appendChild(createCardElement(cardData));
+            }
+        });
+    }
 
-    document.getElementById('deck').innerHTML = '<div class="card" style="background:gray"></div>';
+    // FINAL STEP: Set the deck visual to Memphis (No gray background anymore!)
+    const deckSlot = document.getElementById('deck');
+    if (deckSlot) {
+        deckSlot.innerHTML = '<div class="card card-back"></div>';
+    }
 }
 
 function dealCard() {
